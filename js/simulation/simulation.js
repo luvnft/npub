@@ -6,6 +6,7 @@ var client = null
 
 async function initializeSimulators () {
   //  Note: Specify null route for a stationary object
+  /*
   var id = 'sim_1' + makeid(6);
   await createSimulator({
     id: id,
@@ -18,6 +19,7 @@ async function initializeSimulators () {
     iotDevices[id].worker = webWorker
   })
   iotDevices[id].worker.postMessage({ action: 'start' })
+  */
 
   var id = 'sim_2' + makeid(6);
   await createSimulator({
@@ -32,6 +34,7 @@ async function initializeSimulators () {
   })
   iotDevices[id].worker.postMessage({ action: 'start' })
 
+  /*
   var id = 'sim_3' + makeid(6);
   await createSimulator({
     id: id,
@@ -44,7 +47,9 @@ async function initializeSimulators () {
     iotDevices[id].worker = webWorker
   })
   iotDevices[id].worker.postMessage({ action: 'start' })
+  */
 
+  /*
   var id = 'sim_4' + makeid(6);
   await createSimulator({
     id: id,
@@ -57,6 +62,7 @@ async function initializeSimulators () {
     iotDevices[id].worker = webWorker
   })
   iotDevices[id].worker.postMessage({ action: 'start' })
+  */
 
   var id = 'sim_5' + makeid(6);
   await createSimulator({

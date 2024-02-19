@@ -1,17 +1,16 @@
-# IoT Dashboard Demo written in JavaScript
-> Application to show how PubNub can be used for IoT use cases, displaying and controlling worldwide IoT assets in real time
+# Transport & Logistics, and Asset Management Demo written in JavaScript
 
-PubNub can help you manage your distributed portfolio of IoT devices, either built into an existing product you produce or by integrating with 3rd party sensors.  Using PubNub you can communicate bidirectionally with global assets in real time with minimum latency.
+> Application to show how PubNub can be used for transport & logistics use cases, displaying and controlling worldwide assets in real time
 
-This IoT dashboard shows how an IoT solution managed by PubNub might look - remote devices will periodically report their status and sensor readings.  You can view device location as well as their online / offline state.
+Using PubNub you can communicate bidirectionally with global assets in real time with minimum latency.  This dashboard shows how a transport & logistics solution managed by PubNub might look - remote devices will periodically report their status and sensor readings.  You can view device location as well as their online / offline state & send push messages to mobile phones.
 
-> This application is designed to show how an IoT solution with PubNub might look and is deliberately a **canned demo**.  For information on how to take this concept to production, please see the next steps section at the end of this ReadMe.  
+> This application is designed to show how a T&L solution with PubNub might look and is deliberately a **canned demo**.  For information on how to take this concept to production, please see the "Further Information" section in this ReadMe.  
 
-![Screenshot](https://raw.githubusercontent.com/PubNubDevelopers/iot-dashboard-javascript-demo/main/media/screenshot_square.png)
+![Screenshot](https://raw.githubusercontent.com/PubNubDevelopers/transport-logistics-javascript-demo/main/media/screenshot_square.png)
 
 ## Demo
 
-A hosted version of this demo can be found at https://www.pubnub.com/demo/iot-dashboard/
+A hosted version of this demo can be found at https://www.pubnub.com/demos/transport-logistics/
 
 ## Features
 
@@ -22,12 +21,11 @@ A hosted version of this demo can be found at https://www.pubnub.com/demo/iot-da
 
 ## Installing / Getting started
 
-This dashboard uses Node, npm and express to show how a PubNub IoT dashboard might look.  For ease of use, devices are simulated but please see [PubNub.com](http://www.pubnub.com) for previous blogs on integrating real IoT hardware such as Arduino and Raspberry Pi.
+This dashboard shows how a PubNub transport & logistics dashboard might look.  For ease of use, devices are simulated but PubNub offers [over 50 SDKs](https://www.pubnub.com/docs/sdks), enabling you to connect to any solution..
 
-To run this project yourself you will need a PubNub account and, optionally, a Google Maps API key.
+To run this project yourself you will need a PubNub account and a Google Maps API key.
 
 ### Requirements
-- [Node.js](https://nodejs.org/en/)
 - [PubNub Account](#pubnub-account) (*Free*)
 
 <a href="https://dashboard.pubnub.com/signup">
@@ -62,29 +60,22 @@ To run this project yourself you will need a PubNub account and, optionally, a G
 1. Clone the GitHub repository.
 
 	```bash
-	git clone https://github.com/PubNubDevelopers/iot-dashboard-javascript-demo.git
+	git clone https://github.com/PubNubDevelopers/transport-logistics-javascript-demo.git
 	```
 1. Navigate to the application directory.
 
 	```bash
-	cd iot-dashboard-javascript-demo
+	cd transport-logistics-javascript-demo
 	```
 
-1. Add your pub/sub keys to `/public/js/keys.js`
+1. Add your pub/sub keys to `js/keys.js`
 
-1. (optional) Add your Google Maps API key which supports the JS Maps API to `public/js/keys.js`.  See 'Using your own Google Maps API key', below.
+1. Add your Google Maps API key which supports the JS Maps API to `js/keys.js`.  See 'Using your own Google Maps API key', below.
 
-1. Install dependencies.
+1. Start a local web server, for example if you have python installed you can run `python3 -m http.server 8080`.  This is required since the demo application uses web workers.
 
-	```bash
-	npm install
-	```
+1. Load `localhost:8080` within your browser (or whichever port you are running the server on). 
 
-1. Run the application: 
-
-	```bash
-	npm run start
-	```
 
 ## Contributing
 Please fork the repository if you'd like to contribute. Pull requests are always welcome. 
@@ -94,21 +85,17 @@ Please fork the repository if you'd like to contribute. Pull requests are always
 
 ## Further Information
 
-Checkout the following lins for more information on developing IoT solutions with PubNub:
+Checkout the following lins for more information on developing transport, delivery, & logistics solutions with PubNub:
 
-- IoT use cases with PubNub: https://www.pubnub.com/use-case/iot-device-control/
-- IoT customers and case studies: https://www.pubnub.com/industry/iot-and-connected-devices/
-- IoT PubNub developer path: https://www.pubnub.com/developers/internet-of-things-developer-path/
+- Transport, Delivery, & Logistics with PubNub: https://www.pubnub.com/solutions/transport-delivery/
 
 ## Using your own Google Maps API key
 
-This project comes with a provided Maps key for ease of setup but should that key be subject to abuse and blocked by Google, you can provide your own as a workaround.
-
-The steps to do this are as follows:
+The steps to provide your own Google Maps API key are as follows:
 
 1. Visit https://developers.google.com/maps/documentation/javascript/get-api-key and follow the instructions to create a project and API keys
 1. Make sure you have the following APIs enabled: 'Maps Embed API', 'Maps JavaScript API'.  Both of these are free.
-1. Add your Google Maps API key to `public/js/keys.js`.
+1. Add your Google Maps API key to `js/keys.js`.
 
 ## Architectural Notes, Next Steps and Future Work
 
@@ -118,21 +105,10 @@ PubNub offers the `signal()` method as an alternative to `publish()` for short l
 
 **Provisioning**
 
-This demo has been built to be expanded in the future to handle real IoT devices.  You may see strange workflows in the code, for example, assigning the simulator an ID and then asking that same simulator for the ID it was just assigned.  The intention is to show that these two pieces of information would usually come from a provisioning server in production and hence the workflow is separated.
-
+This demo has been built with real device provisioning in mind.  You may see strange workflows in the code, for example, assigning the simulator an ID and then asking that same simulator for the ID it was just assigned.  The intention is to show that these two pieces of information would usually come from a provisioning server in production and hence the workflow is separated.
 
 **Message Persistence:**
 
-- For ease of use, this demo lacks any kind of serverside message persistence.  Most customers deploying an IoT solution with PubNub to production will choose to use **[PubNub App Context](https://www.pubnub.com/docs/sdks/javascript/api-reference/objects)** to store attributes of the device.  This is analogous to a 'device shadow' in AWS or 'twin device' in Azure.
+- For ease of use, this demo lacks any kind of serverside message persistence.  Most customers deploying this kind of solution with PubNub will choose to use **[PubNub App Context](https://www.pubnub.com/docs/sdks/javascript/api-reference/objects)** to store attributes of the device.  This is analogous to a 'device shadow' in AWS or 'twin device' in Azure.
 - Because entities are only stored locally, if you refresh the page you will lose any created simulators.  **This is a limitation of the demo, not a limitation of PubNub**.
-- You will also see this if you open multiple instances of this application in different browser tabs.  Any device (simulator) you create will only have its messages subscribed to by the tab in which you created the device.
 
-**MQTT:**
-
-- Most IoT solutions will use [MQTT](https://www.pubnub.com/learn/glossary/mqtt/) to exchange messages between devices and a server.  PubNub offer an [MQTT bridge](https://www.pubnub.com/docs/sdks/mqtt-pubnub-bridge) to integrate devices that communicate via MQTT and many of our IoT customers choose to take advantage of this.  The simulated devices spawned by this application only support the [PubNub JavaScript SDK](https://www.pubnub.com/docs/sdks/javascript) - **This is a limitation of the demo, not a limitation of PubNub**.  MQTT integration is best done using real devices.
-- **Real Devices:** Although this dashboard has been designed to integrate with real devices, the step-by-step tutorial to do this is left for a future exercise.
-
-**Events &amp; Actions**
-
-- PubNub's "[Events &amp; Actions](https://www.pubnub.com/docs/functions/events-and-actions)" feature allows you to listen for specific, configurable events and take the appropriate action such as invoking a webhook or [PubNub Function](https://www.pubnub.com/docs/functions/overview).  Events &amp; Actions are ideal for IoT use cases, for example alerting the dashboard if a temperature sensor indicates food is stored above an acceptable temperature, the person monitoring the dashboard could then take immediate action to resolve the situation.
-- This demo does not include Events &amp; Actions but this is left for a future exercise.

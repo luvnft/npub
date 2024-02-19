@@ -5,7 +5,7 @@
 
 if ('function' === typeof importScripts) {
   const window = null
-  importScripts('https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js')
+  importScripts('https://cdn.pubnub.com/sdk/javascript/pubnub.7.5.0.min.js')
   importScripts('./simulator_types.js')
 
   var deviceSimulator

@@ -42,6 +42,10 @@ function editDevice (target) {
       old_firmware_button
     )
     document.getElementById('editModalUpdateFirmwareFile').value = ''
+    document.getElementById('editModalUpdateFirmware').classList.add('disabled')
+    document.getElementById('editModalUpdateFirmwareFile').addEventListener('change', function(e) {
+      document.getElementById('editModalUpdateFirmware').classList.remove('disabled')
+    })
     document
       .getElementById('editModalUpdateFirmware')
       .addEventListener('click', function () {

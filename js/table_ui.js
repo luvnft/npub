@@ -41,10 +41,10 @@ function registeredDeviceRow (deviceId) {
   var presence = ''
   if (iotDevices[deviceId].online === 'yes') {
     presence +=
-      "<span style='color:green;float:right;margin-right:5px' data-bs-toggle='tooltip' data-bs-placement='right' title='Device is Online'>" + mobile + " <i class='fa-solid fa-circle'></i>&nbsp;&nbsp;" + editIcon + "</span>"
+      "<span class='presence-dot-online' data-bs-toggle='tooltip' data-bs-placement='right' title='Device is Online'></span><span>" + editIcon + "</span>"
   } else {
     presence +=
-      "<span style='color:gray;float:right;margin-right:5px' data-bs-toggle='tooltip' data-bs-placement='right' title='Device is Offline'>" + mobile + " <i class='fa-regular fa-circle'></i>&nbsp;&nbsp;" + editIcon + "</span>"
+      "<span class='presence-dot-gray' data-bs-toggle='tooltip' data-bs-placement='right' title='Device is Offline'></span><span>" + editIcon + "</span>"
   }
   html += iotDevices[deviceId].name + ' '
   //html += editIcon + ''
