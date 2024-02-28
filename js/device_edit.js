@@ -2,160 +2,187 @@
  * Functions to handle the 'Edit Device' modal.
  */
 
-function editDevice (target) {
-  var deviceId = target
-  if (deviceId instanceof HTMLLIElement) deviceId = target.id
+function editDevice(target) {
+  var deviceId = target;
+  if (deviceId instanceof HTMLLIElement) deviceId = target.id;
   if (deviceId != null) {
     var editModal = new bootstrap.Modal(
-      document.getElementById('editModal'),
+      document.getElementById("editModal"),
       {}
-    )
-    document.getElementById('editModalTitle').innerHTML =
-      'Edit Device: ' + iotDevices[deviceId].name
-    document.getElementById('editModalDeviceId').innerHTML = deviceId
-    document.getElementById('editModalDeviceName').value =
-      iotDevices[deviceId].name
-    document.getElementById('editModalIntervalRangeLabel').innerHTML =
-      'Sensor Reporting Interval: ' +
-      iotDevices[deviceId].sensors[0].sensor_update_frequency / 1000 +
-      's'
-    document.getElementById('editModalIntervalRange').value =
-      iotDevices[deviceId].sensors[0].sensor_update_frequency
-    $('#editModalIntervalRange').on('input', UpdateEditModalIntervalRangeLabel)
-    //  Avoid duplicate click handlers on the reboot button
-    var old_reboot_button = document.getElementById('editModalReboot')
-    var new_reboot_button = old_reboot_button.cloneNode(true)
+    );
+    document.getElementById("editModalTitle").innerHTML =
+      "Vehicle: " + iotDevices[deviceId].name;
+
+    var old_reboot_button = document.getElementById("editModalReboot");
+    var new_reboot_button = old_reboot_button.cloneNode(true);
     old_reboot_button.parentNode.replaceChild(
       new_reboot_button,
       old_reboot_button
-    )
+    );
     document
-      .getElementById('editModalReboot')
-      .addEventListener('click', function () {
-        rebootDevice(deviceId)
-      })
-    //  Avoid duplicate click handlers on the updateFirmware button
-    var old_firmware_button = document.getElementById('editModalUpdateFirmware')
-    var new_firmware_button = old_firmware_button.cloneNode(true)
-    old_firmware_button.parentNode.replaceChild(
-      new_firmware_button,
-      old_firmware_button
-    )
-    document.getElementById('editModalUpdateFirmwareFile').value = ''
-    document.getElementById('editModalUpdateFirmware').classList.add('disabled')
-    document.getElementById('editModalUpdateFirmwareFile').addEventListener('change', function(e) {
-      document.getElementById('editModalUpdateFirmware').classList.remove('disabled')
-    })
-    document
-      .getElementById('editModalUpdateFirmware')
-      .addEventListener('click', function () {
-        var firmwareFile = document.getElementById(
-          'editModalUpdateFirmwareFile'
-        ).files[0]
-        if (firmwareFile != null)
-          updateFirmware(deviceId, firmwareFile.name, firmwareFile)
-      })
+      .getElementById("editModalReboot")
+      .addEventListener("click", function () {
+        rebootDevice(deviceId);
+      });
 
-    editModal.show()
+    var old_rereoute_button = document.getElementById("editModalReroute");
+    var new_reroute_button = old_rereoute_button.cloneNode(true);
+    old_rereoute_button.parentNode.replaceChild(
+      new_reroute_button,
+      old_rereoute_button
+    );
+    document
+      .getElementById("editModalReroute")
+      .addEventListener("click", function () {
+        reroute(deviceId);
+      });
+
+    deviceId, (document.getElementById("editModalPushMessage").value = "");
+    var old_send_push_button = document.getElementById(
+      "editModalPushMessageBtn"
+    );
+    var new_send_push_button = old_send_push_button.cloneNode(true);
+    old_send_push_button.parentNode.replaceChild(
+      new_send_push_button,
+      old_send_push_button
+    );
+    document
+      .getElementById("editModalPushMessageBtn")
+      .addEventListener("click", function () {
+        pushMessage(
+          deviceId,
+          document.getElementById("editModalPushMessage").value
+        );
+      });
+
+    //  DEMO: used by the interactive demo
+    actionCompleted({
+      action: "View Properties of a Dispatched Vehicle",
+      debug: false,
+    });
+    //  END DEMO: used by the interactive demo
+
+    editModal.show();
   }
 }
 
-function UpdateEditModalIntervalRangeLabel () {
-  document.getElementById('editModalIntervalRangeLabel').innerHTML =
-    'Sensor Reporting Interval: ' +
-    document.getElementById('editModalIntervalRange').value / 1000 +
-    's'
+function UpdateEditModalIntervalRangeLabel() {
+  document.getElementById("editModalIntervalRangeLabel").innerHTML =
+    "Sensor Reporting Interval: " +
+    document.getElementById("editModalIntervalRange").value / 1000 +
+    "s";
 }
 
-async function rebootDevice (deviceId) {
+//  Handler for the request to reboot a sensor - sends a message to the web worker over PubNub
+async function rebootDevice(deviceId) {
   await pubnub.publish({
     channel: iotDevices[deviceId].channelName,
     message: {
-      action: 'reboot'
-    }
-  })
+      action: "reboot",
+    },
+  });
 
   //  DEMO: used by the interactive demo
   actionCompleted({
-    action: 'Reboot any device (it will go offline briefly)',
-    debug: false
-  })
+    action: "Reboot a Temperature Sensor",
+    debug: false,
+  });
   //  END DEMO: used by the interactive demo
 
-  $('#editModal').modal('hide')
+  $("#editModal").modal("hide");
 }
 
-async function updateFirmware (deviceId, firmwareFileName, firmwareFile) {
-  if (firmwareFileName === '') return
-  else {
-    await pubnub.sendFile({
+async function pushMessage(deviceId, messageText) {
+  //  You can send Push Messages (FCM on Android, APNS on Apple) from PubNub, this can greatly simplify your
+  //  application logic, allowing you to seamlessly integrate with mobile push technologies without worrying
+  //  about application-specific code by sending a specific payload in your PubNub message.  This demo simulates
+  //  Push to show what it might look like in production, but you can see a real Push Message being
+  //  sent / received over PubNub from our Push demo: https://www.pubnub.com/demos/push/.
+  if (messageText !== "") {
+    await pubnub.publish({
       channel: iotDevices[deviceId].channelName,
-      file: firmwareFile
-    })
+      message: {
+        action: "pushMessage",
+        text: messageText,
+      },
+    });
 
     //  DEMO: used by the interactive demo
-    actionCompleted({ action: 'Update any device firmware', debug: false })
+    actionCompleted({
+      action: "Send a Push Message to the Driver",
+      debug: false,
+    });
     //  END DEMO: used by the interactive demo
 
-    $('#editModal').modal('hide')
+    $("#editModal").modal("hide");
+  } else {
+    //  message text is empty
+    document.getElementById("editModalPushMessage").focus();
   }
 }
 
-async function editModalSaveChanges (args) {
-  //  Need to save the following
-  var newDeviceName = document.getElementById('editModalDeviceName').value
-  var newSensorUpdateFrequency = document.getElementById(
-    'editModalIntervalRange'
-  ).value
-  var deviceId = document.getElementById('editModalDeviceId').innerHTML
-  await pubnub.publish({
-    channel: iotDevices[deviceId].channelName,
-    message: {
-      action: 'update',
-      params: {
-        deviceName: newDeviceName,
-        sensorUpdateFrequency: newSensorUpdateFrequency
-      }
+//  Handler for the request to reroute the vehicle.  
+//  Generates a new route (in reality, just a single leg), and sends a message to the web worker over PubNub with the new route
+async function reroute(deviceId) {
+  //  Create a new route from the driver's current location
+  var legs = [];
+  var lastLocation = {"lat":iotDevices[deviceId].lat,"lng":iotDevices[deviceId].long};
+  for (var i = 0; i < 1; i++) { //  Deliberately choosing to only send one leg here for simplicity
+    var currentLeg = await generateLeg(lastLocation);
+    if (currentLeg.length > 0) {
+      legs.push(...currentLeg);
+      lastLocation = currentLeg[currentLeg.length - 1];
     }
-  })
-
-  //  DEMO: used by the interactive demo
-  if (newSensorUpdateFrequency == '60000')
-    actionCompleted({
-      action: 'Modify any sensor reporting interval to 60 seconds',
-      debug: false
+  }
+  //  New route is now within legs
+  if (legs.length > 0) {
+      await pubnub.publish({
+      channel: iotDevices[deviceId].channelName,
+      message: {
+        action: "reroute",
+        route: legs
+      }
     })
-  if (newDeviceName.toLowerCase() === 'fred')
-    actionCompleted({
-      action: "Change the name of any device to 'Fred'",
-      debug: false
-    })
-  //  END DEMO: used by the interactive demo
 
-  $('#editModal').modal('hide')
+    //  DEMO: used by the interactive demo
+    actionCompleted({
+      action: "Reroute a Vehicle",
+      debug: false,
+    });
+    //  END DEMO: used by the interactive demo
+
+    $("#editModal").modal("hide");
+  } else {
+    //  For example, if the user is on some remote island, this is a failsafe
+    console.log(
+      "Error: Could not find sensible route"
+    );
+  }
 }
 
 //  Not strictly part of the edit modal but fits here
-async function deleteDevice (target) {
-  var deviceId = target
-  if (deviceId instanceof HTMLLIElement) deviceId = target.id
+//  Although we don't allow the deletion of vehicles from the UI, like the IoT demo did, this logic
+//  is still used after a vehicle completes its route.
+async function deleteDevice(target) {
+  var deviceId = target;
+  if (deviceId instanceof HTMLLIElement) deviceId = target.id;
   if (deviceId != null) {
     await pubnub.publish({
       channel: iotDevices[deviceId].channelName,
       message: {
-        action: 'stop'
-      }
-    })
+        action: "stop",
+      },
+    });
 
     if (iotDevices[deviceId].worker != null)
-      iotDevices[deviceId].worker.terminate() //  Should really wait until we get the status message to say the client is disconnected but this is only for the simulator.
-    removeRegisteredDevice(deviceId)
-    iotDevices[deviceId].marker.setMap(null)
-    populateSelectedDeviceTable(null, false)
-    iotDevices[deviceId] = null
-
-    //  DEMO: used by the interactive demo
-    actionCompleted({ action: 'Delete a device', debug: false })
-    //  END DEMO: used by the interactive demo
+      iotDevices[deviceId].worker.terminate(); //  Should really wait until we get the status message to say the client is disconnected but this is only for the simulator.
+    removeRegisteredDevice(deviceId);
+    activeVehicles--;
+    if (activeVehicles < MAX_ACTIVE_VEHICLES) {
+      setTimeout(
+        "document.getElementById('btnDispatchVehicle').disabled = false;",
+        500
+      );
+    }
   }
 }
