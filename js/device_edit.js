@@ -146,7 +146,7 @@ async function reroute(deviceId) {
 
     //  DEMO: used by the interactive demo
     actionCompleted({
-      action: "Reroute a Vehicle",
+      action: "Redirect a Vehicle",
       debug: false,
     });
     //  END DEMO: used by the interactive demo
