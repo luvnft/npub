@@ -5,7 +5,7 @@
 if ("function" === typeof importScripts) {
   const window = null;
   const TICK_INTERVAL_BASE = 500; //  Time in ms between each 'tick', triggering a simulation update
-  importScripts("https://cdn.pubnub.com/sdk/javascript/pubnub.7.5.0.min.js");
+  importScripts("https://cdn.pubnub.com/sdk/javascript/pubnub.7.6.1.min.js");
 
   var deviceSimulator;
   var sharedChannelName;
