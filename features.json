@@ -1,11 +1,11 @@
 {
     "features": [
-      "Find the European freezer truck",
-      "Delete a device",
-      "Click on a map marker",
-      "Modify any sensor reporting interval to 60 seconds",
-      "Reboot any device (it will go offline briefly)",
-      "Update any device firmware",
-      "Change the name of any device to 'Fred'"
+      "Dispatch a Vehicle",
+      "View Properties of a Dispatched Vehicle",
+      "Send a Push Message to the Driver",
+      "Reboot a Temperature Sensor",
+      "Localize the Experience",
+      "Redirect a Vehicle",
+      "Dispatch a Second Vehicle"
     ]
 }

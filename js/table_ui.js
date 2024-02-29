@@ -1,154 +1,131 @@
 /**
  * Functions update the data in the selected device and registered devices tables.
  */
-
-function updateRegisteredDevice (deviceId) {
-  var li_old = document.getElementById(deviceId)
-
-  var li = document.createElement('li')
-  li.setAttribute('class', 'list-group-item small cursor-hand')
-  li.setAttribute('id', deviceId)
-  li.innerHTML = registeredDeviceRow(deviceId)
-  li_old.replaceWith(li)
+function updateRegisteredDeviceLocation(deviceId) {
+  var latSpan = document.getElementById(deviceId + "-lat");
+  var lngSpan = document.getElementById(deviceId + "-lng");
+  if (latSpan) latSpan.innerHTML = iotDevices[deviceId].lat;
+  if (lngSpan) lngSpan.innerHTML = iotDevices[deviceId].long;
 }
 
-function addRegisteredDevice (deviceId) {
-  var ul = document.getElementById('registeredDevicesList')
-  var li = document.createElement('li')
-  li.setAttribute('class', 'list-group-item small cursor-hand')
-
-  li.setAttribute('id', deviceId)
-  li.innerHTML = registeredDeviceRow(deviceId, li)
-  ul.appendChild(li)
-}
-
-function removeRegisteredDevice (deviceId) {
-  var ul = document.getElementById('registeredDevicesList')
-  var li = document.getElementById(deviceId)
-  ul.removeChild(li)
-}
-
-function registeredDeviceRow (deviceId) {
-  var editIcon =
-    "<span style='float:right'><H5><a href='javascript:editDevice(\"" +
-    deviceId +
-    "\")' style='color:black'><i class='fa-regular fa-pen-to-square'></i></H5></span>"
-  var html = ''
-  var mobile = ''
-  if (iotDevices[deviceId].mobile === true) {
-    mobile = "<span class='badge rounded-pill custom-bubble'>Moving</span>"
-  }
-  var presence = ''
-  if (iotDevices[deviceId].online === 'yes') {
-    presence +=
-      "<span class='presence-dot-online' data-bs-toggle='tooltip' data-bs-placement='right' title='Device is Online'></span><span>" + editIcon + "</span>"
+function updateRegisteredDevicePresence(deviceId) {
+  var presenceSpan = document.getElementById(deviceId + "-presence");
+  if (iotDevices[deviceId].online === "yes") {
+    if (presenceSpan) presenceSpan.classList.remove("presence-dot-gray");
+    if (presenceSpan) presenceSpan.classList.add("presence-dot-online");
   } else {
-    presence +=
-      "<span class='presence-dot-gray' data-bs-toggle='tooltip' data-bs-placement='right' title='Device is Offline'></span><span>" + editIcon + "</span>"
+    if (presenceSpan) presenceSpan.classList.add("presence-dot-gray");
+    if (presenceSpan) presenceSpan.classList.remove("presence-dot-online");
   }
-  html += iotDevices[deviceId].name + ' '
-  //html += editIcon + ''
-  html += presence + ''
-  return html
+  updateRegisteredDeviceSensor(deviceId);
 }
 
-function registeredDeviceRow_click (e) {
-  if (e !== null && e.target !== null && iotDevices[e.target.id]) {
-    populateSelectedDeviceTable(e.target.id, true)
-    focusOnMarker(e.target.id)
+function updateRegisteredDeviceSensor(deviceId) {
+  var sensorValue = document.getElementById(deviceId + "-sensorValue");
+  if (sensorValue) {
+    if (iotDevices[deviceId].online === "yes")
+      sensorValue.innerHTML = iotDevices[deviceId].sensors[0].sensor_value;
+    else
+      sensorValue.innerHTML =
+        "<i class='fas fa-exclamation-triangle'></i> Offline";
   }
 }
 
-function populateSelectedDeviceTable (deviceId, manuallyInvoked) {
-  if (selectedId != null && deviceId != null) {
-    iotDevices[selectedId].selected = false
+async function updateDeliveryInfo(deviceId, route, remainingDeliveries) {
+  var destination = {
+    lat: route[route.length - 1].lat,
+    lng: route[route.length - 1].lng,
+  };
+  var destinationAddress = await server_resolveLatLongToAddress(destination);
+  var nextDelivery = document.getElementById(deviceId + "-nextDelivery");
+  if (nextDelivery) nextDelivery.innerHTML = destinationAddress;
+  var remaining = document.getElementById(deviceId + "-remainingDeliveries");
+  if (remaining) remaining.innerHTML = remainingDeliveries;
+}
+
+async function updateDeliveryEta(deviceId, stepsLeft, simulationInterval) {
+  var etaText = "";
+  var etaInMs = stepsLeft * simulationInterval;
+
+  if (etaInMs < 1000) {
+    etaText = "Your driver has arrived";
   }
 
-  selectedId = deviceId
+  var etaInMins = Math.floor(etaInMs / (60 * 1000));
+  var etaInSecs =
+    etaInMs >= 60000
+      ? Math.floor((etaInMs % (etaInMins * 60 * 1000)) / 1000)
+      : Math.floor(etaInMs / 1000);
+  etaText = etaInMins + "m " + etaInSecs + "s";
+
+  var eta = document.getElementById(deviceId + "-eta");
+  if (eta) eta.innerHTML = etaText;
+}
+
+function addRegisteredDevice(deviceId) {
+  var ul = document.getElementById("registeredVehiclesList");
+  var li = document.createElement("li");
+  li.setAttribute("class", "list-group-item small cursor-hand");
+  li.setAttribute("id", deviceId);
+  li.innerHTML = registeredDeviceRow(deviceId, li);
+  ul.appendChild(li);
+}
+
+function removeRegisteredDevice(deviceId) {
+  var ul = document.getElementById("registeredVehiclesList");
+  var li = document.getElementById(deviceId);
+  ul.removeChild(li);
+}
+
+function registeredDeviceRow(deviceId) {
+  var row = "";
   if (deviceId != null) {
-    iotDevices[deviceId].selected = true
+    row = `\
+    <div class='vehicleSensor-heading'>\
+      <div class='heading-5'>${iotDevices[deviceId].name}</div>\
+      <div class='vehicleSensor-options'>
+        <div class='vehicleSensor-option' onclick='editDevice(${deviceId})'><H5><i class='fa-regular fa-pen-to-square'></i></H5></div>
+      </div>
+    </div>\
+      <div class='text-body-3'><span class='heading-6'>Next Delivery:</span> <span id='${deviceId}-nextDelivery'></span></div>\
+      <div class='text-body-3'><span class='heading-6'>ETA to next Delivery:</span> <span id='${deviceId}-eta'></span></div>\
+      <div class='text-body-3'><span class='heading-6'>Remaining Deliveries:</span> <span id='${deviceId}-remainingDeliveries'></span></div>\
+      <div class='cargoSensor-heading'>\
+        <div class='heading-4'>${iotDevices[deviceId].sensors[0].sensor_name}</div>\
+        <div id='${deviceId}-presence' class='presence-dot-online vehicleSensor-option'></div>\
+      </div>
+      <div class='text-body-3'><span class='heading-6'>Type:</span> ${iotDevices[deviceId].sensors[0].sensor_type}</div>\
+      <div class='text-body-3'><span class='heading-6'>Reading:</span> <span id='${deviceId}-sensorValue'>${iotDevices[deviceId].sensors[0].sensor_value}</span> ${iotDevices[deviceId].sensors[0].sensor_units}</div>\
+      <div class='heading-4'>Driver's Phone</div>\
+      <div class='text-body-3'>Location: [<span id='${deviceId}-lat'></span>, <span id='${deviceId}-lng'></span>]</div>`;
   }
 
-  if (manuallyInvoked) {
-    //  DEMO: used by the interactive demo
-    if (
-      deviceId != null &&
-      iotDevices[deviceId].name == 'Victoria Falls Wind Speed'
-    )
-      actionCompleted({
-        action: 'View the Victoria falls windspeed',
-        debug: false
-      })
-    if (
-      deviceId != null &&
-      iotDevices[deviceId].name == 'EU Freezer Truck'
-    )
-      actionCompleted({
-        action: 'Find the European freezer truck',
-        debug: false
-      })
-    //  END used by interactive demo
-  }
+  return row;
+}
 
-  document.getElementById('selected-name').innerHTML =
-    deviceId != null ? '' + iotDevices[deviceId].name : 'Selected: '
-  document.getElementById('selected-id').innerHTML =
-    deviceId != null ? '' + deviceId : ''
-  document.getElementById('selected-channel-name').innerHTML =
-    deviceId != null ? '' + iotDevices[deviceId].channelName : ''
-  if (deviceId == null || iotDevices[deviceId].lat == 0) {
-    document.getElementById('selected-location').innerHTML =
-      'Location: Not yet seen'
-  } else {
-    document.getElementById('selected-location').innerHTML =
-      'Location: [' +
-      iotDevices[deviceId].lat +
-      ', ' +
-      iotDevices[deviceId].long +
-      ']'
-  }
-  document.getElementById('selected-sensor-name').innerHTML =
-    deviceId != null
-      ? 'Sensor: ' + iotDevices[deviceId].sensors[0].sensor_name
-      : 'Sensor: '
-  document.getElementById('selected-sensor-value').innerHTML =
-    deviceId != null
-      ? 'Reading: ' +
-        iotDevices[deviceId].sensors[0].sensor_value +
-        ' ' +
-        iotDevices[deviceId].sensors[0].sensor_units
-      : 'Reading: '
+function registeredDeviceRow_click(e) {
+  var targetElement = e.target.closest("[id]");
   if (
-    deviceId == null ||
-    iotDevices[deviceId].sensors[0].sensor_update_frequency == 0
+    targetElement !== null &&
+    targetElement.id !== null &&
+    iotDevices[targetElement.id]
   ) {
-    document.getElementById('selected-sensor-update-frequency').innerHTML =
-      'Update Frequency: Not yet seen'
-  } else {
-    document.getElementById('selected-sensor-update-frequency').innerHTML =
-      'Update Frequency: ' +
-      iotDevices[deviceId].sensors[0].sensor_update_frequency / 1000 +
-      's'
+    focusOnMarker(targetElement.id);
   }
-  document.getElementById('selected-last-seen').innerHTML =
-    deviceId != null
-      ? 'Last Seen: ' + formatDate(iotDevices[deviceId].sensors[0].sensor_lastupdate)
-      : 'Last Seen:'
-  document.getElementById('selected-firmware').innerHTML =
-    deviceId != null
-      ? 'Firmware: ' + iotDevices[deviceId].firmware_version
-      : 'Firmware:'
-  document.getElementById('selected-delete-device').style.display =
-    deviceId != null ? 'block' : 'none'
 }
 
-function formatDate(dateString)
-{
-  let formattedDate = new Date(dateString)
-  const options = { month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+function formatDate(dateString) {
+  let formattedDate = new Date(dateString);
+  const options = {
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  };
 
-  return formattedDate.toLocaleDateString('en-US', options);
+  return formattedDate.toLocaleDateString("en-US", options);
 }
 
-var ul = document.getElementById('registeredDevicesList');
-ul.addEventListener('click', registeredDeviceRow_click, true);
+var ul = document.getElementById("registeredVehiclesList");
+ul.addEventListener("click", registeredDeviceRow_click);
