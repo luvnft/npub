@@ -313,3 +313,14 @@ li.cursor-hand {
 .login-message-icon-info {
     content: url(./icons/i.png)
 }
+
+.nopadding {
+    padding: 0 !important;
+    margin: 0 !important;
+ }
+
+ @media screen and (max-height: 697px) {
+    #map-canvas {
+        height: 500px !important;
+    }
+}
