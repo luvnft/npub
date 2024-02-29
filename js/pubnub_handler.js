@@ -72,6 +72,7 @@ async function onload() {
               payload.message.sensorType,
               channelName == payload.channel
             );
+            document.getElementById("developer-note").style.display = "none";
           }
           if (iotDevices[payload.publisher].routeInfo != null) {
             //  Tried to start duplicate route (sometimes happens when debugging web workers)

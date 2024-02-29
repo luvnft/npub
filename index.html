@@ -101,6 +101,10 @@
                                     <ul class="list-group list-group-flush" id="registeredVehiclesList">
                                     </ul>
                                 </div>
+                                <div id="developer-note" class="text-label developer-message developer-message-info">
+                                    <img id="developer-note-icon" class="login-message-icon login-message-icon-info">
+                                    <span id="login-message-text"><b>Getting Started:</b> Please dispatch a vehicle to start the demo</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -157,19 +161,24 @@
                                     aria-label="Close"></button>
                             </div>
 
-                            <div></div>
-                            <input type="text" class="form-control" placeholder="Message to Send to Driver"
-                                id="editModalPushMessage">
-                            <span class="float-end mb-3">
-                                <button type="button" class="btn pn-btn" style="margin-top:5px;margin-bottom:5px"
-                                    id="editModalPushMessageBtn">Send Push</button>
-                            </span>
+                            <div class="buttonRow">
+                                <input type="text" class="form-control" placeholder="Push Message to Send to Driver"
+                                    id="editModalPushMessage">
+                                <span class="">
+                                    <button type="button" class="btn pn-btn" style="margin-left:5px"
+                                        id="editModalPushMessageBtn">Send</button>
+                                </span>
+                            </div> 
                             <HR width="100%">
                         </div>
-                        <label class="form-label">Route and Vehicle Actions:</label>
                         <div class="buttonRow">
-                            <button type="button" class="btn pn-btn" id="editModalReboot">Reboot Sensor</button>
-                            <button type="button" class="btn pn-btn" id="editModalReroute">Redirect Vehicle</button>
+                            <label class="form-label" style="margin-bottom:0px">Restart the onboard temperature sensor:</label>
+                            <button type="button" class="btn pn-btn" id="editModalReboot"><nobr>Reboot Sensor</nobr></button>
+                        </div>
+                        <HR width="100%">
+                        <div class="buttonRow">
+                            <label class="form-label" style="margin-bottom:0px">Change the next delivery location:</label>
+                            <button type="button" class="btn pn-btn" style="margin-top: 5px" id="editModalReroute"><nobr>Redirect Vehicle</nobr></button>
                         </div>
                     </div>
                     <div class="modal-footer">

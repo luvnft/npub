@@ -116,19 +116,12 @@ async function initializeDeliveryRoute(
     map,
     custom_id: "v" + vehicleId,
     draggable: false,
+    clickable: false,
     icon: icon,
     position: {
       lat: route[0].lat,
       lng: route[0].lng,
     },
-  });
-  iotDevices[vehicleId].routeInfo.vehicleMarker.addListener("click", () => {
-    //zoomOnPosition(vehicles[vehicleId].vehicleMarker.getPosition());
-    for (var vehicle in vehicles) {
-      iotDevices[vehicle].routeInfo.selected = false;
-    }
-    iotDevices[vehicleId].routeInfo.selected = true;
-    //populateVehicleBox(vehicleId);
   });
 
   //  Draw the Route on the map including end marker

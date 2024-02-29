@@ -5,6 +5,7 @@ var userLocation = {
 };
 
 function dispatchVehicle_click() {
+  document.getElementById("developer-note").style.display = "none";
   //  Rate limit the speed that vehicles can be summoned (directions api is rate limited)
   document.getElementById("btnDispatchVehicle").disabled = true;
   activeVehicles++;
