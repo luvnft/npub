@@ -203,7 +203,7 @@ function showInfoWindow(vehicleId, message) {
   if (iotDevices[vehicleId] == null) return;
   var infoMessage =
     "<img src='./pn_small.png'> <b>Push Message via PubNub</b> <br/><br/>";
-  infoMessage += message;
+  infoMessage += escapeHTML(message);
   if (iotDevices[vehicleId].infoWindow != null)
     iotDevices[vehicleId].infoWindow.close();
 
@@ -222,6 +222,16 @@ function showInfoWindow(vehicleId, message) {
 function hideInfoWindow(vehicleId) {
   if (iotDevices[vehicleId].infoWindow != null)
     iotDevices[vehicleId].infoWindow.close();
+}
+
+function escapeHTML (unsafe_str) {
+  return unsafe_str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/\'/g, '&#39;')
+    .replace(/\//g, '&#x2F;')
 }
 
 window.initialize = initialize;
